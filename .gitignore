@@ -1,0 +1,9 @@
+*/nbproject/private/
+build
+dist
+
+*.class
+
+# Package Files #
+*.war
+*.ear
