@@ -44,7 +44,6 @@ public class Main
                         while ( in.hasNextLine() )
                         {
                             String linia = in.nextLine();
-                            salida.write(linia.getBytes());
                             System.out.println("RECVING: [" + linia + "]");
                         }
                     }
