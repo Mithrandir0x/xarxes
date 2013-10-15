@@ -6,16 +6,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Main
+public class ConnectionManager
 {
     
     private static List<ThreadChat> connections = Collections.synchronizedList(new ArrayList<ThreadChat>());
     private static List<Integer> toBeDeleted = Collections.synchronizedList(new ArrayList<Integer>());
-    private static Thread watchdog = new Thread("Charlie"){
+    private static final Thread watchdog = new Thread("Charlie"){
         
         @Override
         public void run()
         {
+            System.out.println("Watchdog watching...");
+            
             while ( true )
             {
                 for ( Integer i : toBeDeleted )
@@ -35,10 +37,13 @@ public class Main
                 // Thread timeout verification
                 for ( ThreadChat th : connections )
                 {
-                    if ( !th.getClientChat().isOnline() )
+                    ClientChat cc = th.getClientChat();
+                    if ( !cc.isOnline() )
                     {
                         try
                         {
+                            System.out.println("Client #" + cc.getContador() + " disconnected...");
+                            cc.close();
                             th.getThread().join(2000);
                         }
                         catch (InterruptedException ex)
@@ -53,11 +58,13 @@ public class Main
         }
         
     };
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args)
+    
+    static
+    {
+        //watchdog.start();
+    }
+    
+    public ConnectionManager()
     {
         int contador = 0;
         try
@@ -70,7 +77,7 @@ public class Main
                 Socket socket = server.accept();
                 
                 System.out.println("Client #" + contador + " connected...");
-                ClientChat r = new ClientChat(socket, contador);
+                ClientChat r = new ClientChat(socket, this, contador);
                 Thread t = new Thread(r);
                 t.start();
                 connections.add(new ThreadChat(t, r));
@@ -93,6 +100,26 @@ public class Main
                 ex.printStackTrace();
             }
         }
+    }
+    
+    public void broadcast(String message)
+    {
+        for ( ThreadChat th : connections )
+        {
+            ClientChat cc = th.getClientChat();
+            if ( cc != null )
+            {
+                cc.send(message);
+            }
+        }
+    }
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args)
+    {
+        new ConnectionManager();
     }
     
     private static class ThreadChat
