@@ -17,16 +17,10 @@ public class Main
         final OutputStream salida;
         
         try
-        {
-            Scanner entradaDades = new Scanner(System.in);
+        {            
+            String IP_Address = args[0];
             
-            //System.out.println("Introdueix la IP del host");
-            //String IP_Address = entradaDades.next();
-            String IP_Address = "127.0.0.1";
-            
-            //System.out.println("introdueix el port");
-            //int port = entradaDades.nextInt();
-            int port = 8189;
+            int port = Integer.parseInt(args[1]);
             
             socket = new Socket(IP_Address, port);
             entrada = socket.getInputStream();
@@ -44,7 +38,8 @@ public class Main
                         while ( in.hasNextLine() )
                         {
                             String linia = in.nextLine();
-                            System.out.println("RECVING: [" + linia + "]");
+                            //System.out.println("RECVING: [" + linia + "]");
+                            System.out.println(linia);
                         }
                     }
                     catch ( Exception ex )
@@ -64,9 +59,18 @@ public class Main
             while ( input.hasNextLine() )
             {
                 message = input.nextLine();
-                System.out.println("SENDING: [" + message + "]");
+                //System.out.println("SENDING: [" + message + "]");
                 out.println(message);
+                
+                if ( message.equals("BYE") )
+                {
+                    Thread.sleep(1000);
+                    break;
+                }
             }
+            
+            writer.join();
+            System.out.println("Disconnected.");
         }
         catch ( Exception ioe )
         {
