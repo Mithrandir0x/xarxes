@@ -16,7 +16,7 @@ public class ConnectionManager
         @Override
         public void run()
         {
-            System.out.println("Watchdog watching...");
+            System.out.println("Woof woof!");
             
             while ( true )
             {
@@ -42,7 +42,7 @@ public class ConnectionManager
                     {
                         try
                         {
-                            System.out.println("Client #" + cc.getContador() + " disconnected...");
+                            System.out.println("Cleaning Client #" + cc.getId() + " thread...");
                             cc.close();
                             th.getThread().join(2000);
                         }
@@ -61,65 +61,7 @@ public class ConnectionManager
     
     static
     {
-        //watchdog.start();
-    }
-    
-    public ConnectionManager()
-    {
-        int contador = 0;
-        try
-        {
-            ServerSocket server = new ServerSocket(8189);
-            System.out.println("Server listening at " + server.getInetAddress() + ":8189");
-            
-            while ( true )
-            {
-                Socket socket = server.accept();
-                
-                System.out.println("Client #" + contador + " connected...");
-                ClientChat r = new ClientChat(socket, this, contador);
-                Thread t = new Thread(r);
-                t.start();
-                connections.add(new ThreadChat(t, r));
-                
-                contador++;
-            }
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                watchdog.join();
-            }
-            catch (InterruptedException ex)
-            {
-                ex.printStackTrace();
-            }
-        }
-    }
-    
-    public void broadcast(String message)
-    {
-        for ( ThreadChat th : connections )
-        {
-            ClientChat cc = th.getClientChat();
-            if ( cc != null )
-            {
-                cc.send(message);
-            }
-        }
-    }
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args)
-    {
-        new ConnectionManager();
+        watchdog.start();
     }
     
     private static class ThreadChat
@@ -144,6 +86,64 @@ public class ConnectionManager
             return chat;
         }
         
+    }
+    
+    public ConnectionManager()
+    {
+        int contador = 0;
+        try
+        {
+            ServerSocket server = new ServerSocket(8189);
+            System.out.println("Server listening at " + server.getInetAddress() + ":8189");
+            
+            while ( true )
+            {
+                Socket socket = server.accept();
+                
+                ClientChat r = new ClientChat(socket, this, contador);
+                Thread t = new Thread(r);
+                t.start();
+                connections.add(new ThreadChat(t, r));
+                broadcast(contador, "Client #" + contador + " connected...");
+                
+                contador++;
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        finally
+        {
+            try
+            {
+                watchdog.join();
+            }
+            catch (InterruptedException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    public void broadcast(int id, String message)
+    {
+        for ( ThreadChat th : connections )
+        {
+            ClientChat cc = th.getClientChat();
+            if ( cc != null && cc.getId() != id )
+            {
+                cc.send(message);
+            }
+        }
+    }
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args)
+    {
+        new ConnectionManager();
     }
 
 }

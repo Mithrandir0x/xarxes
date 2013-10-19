@@ -2,7 +2,6 @@ package edu.ub.xar.chat.server;
 
 import java.io.*;
 import java.net.*;
-import java.util.Scanner;
 
 class ClientChat implements Runnable
 {
@@ -11,13 +10,13 @@ class ClientChat implements Runnable
     private ConnectionManager managerChat = null;
     private PrintWriter out;
     private BufferedReader in;
-    private int contador;
+    private int id;
     private boolean online = true;
 
     public ClientChat(Socket s, ConnectionManager mc, int c)
     {
         socket = s;
-        contador = c;
+        id = c;
         managerChat = mc;
     }
 
@@ -37,7 +36,7 @@ class ClientChat implements Runnable
                 System.out.println("RECVING: [" + linia + "]");
                 
                 if ( linia == null )
-                    throw new Exception("Broken connection peer #" + contador);
+                    throw new Exception("Broken connection peer #" + id);
                 
                 if ( linia.trim().equals("BYE") )
                 {
@@ -45,7 +44,7 @@ class ClientChat implements Runnable
                 }
                 else
                 {
-                    managerChat.broadcast(contador + ": " + linia);
+                    managerChat.broadcast(id, id + ": " + linia);
                 }
             }
         }
@@ -56,6 +55,7 @@ class ClientChat implements Runnable
         finally
         {
             online = false;
+            managerChat.broadcast(id, "Client #" + id + " has disconnected.");
             try
             {
                 if (socket != null)
@@ -72,14 +72,17 @@ class ClientChat implements Runnable
     
     public void send(String message)
     {
-        System.out.println("SENDING: [" + message + "]");
-        out.println(message);
-        out.flush();
+        if ( online )
+        {
+            System.out.println("SENDING: [" + message + "]");
+            out.println(message);
+            out.flush();
+        }
     }
     
-    public int getContador()
+    public int getId()
     {
-        return contador;
+        return id;
     }
     
     public boolean isOnline()
