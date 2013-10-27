@@ -54,8 +54,6 @@ public abstract class SignalPlot
                 bits[i] = 1;
         }
         
-        System.out.println(Arrays.toString(bits));
-        
         double t = 0;
         for ( int i = 0 ; i < x.length ; i++ )
         {
