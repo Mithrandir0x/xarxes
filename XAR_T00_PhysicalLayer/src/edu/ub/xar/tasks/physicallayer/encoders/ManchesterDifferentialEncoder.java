@@ -40,7 +40,7 @@ public class ManchesterDifferentialEncoder extends SignalPlot
     @Override
     public String getTitle()
     {
-        return "Manchester Differential (BIPHASE)";
+        return "Differential Manchester (BIPHASE)";
     }
 
     @Override

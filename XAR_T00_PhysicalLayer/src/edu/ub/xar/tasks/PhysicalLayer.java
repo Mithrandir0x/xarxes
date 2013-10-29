@@ -120,7 +120,7 @@ public class PhysicalLayer extends JFrame
         System.out.println("   nrzl                       Nonreturn to Zero Level");
         System.out.println("   nrzi                       Nonreturn to Zero Inverted");
         System.out.println("   manchester                 Manchester");
-        System.out.println("   manchester_diferential     Manchester Diferential, or Biphase Mark Code");
+        System.out.println("   manchester_diferential     Diferential Manchester, or Biphase Mark Code");
         System.out.println("   pseudoternary              Pseudoternary");
         System.out.println("   bipolarami                 Bipolar-AMI");
         System.out.println("   b8zs                       Bipolar with 8 zeroes Substitution");
