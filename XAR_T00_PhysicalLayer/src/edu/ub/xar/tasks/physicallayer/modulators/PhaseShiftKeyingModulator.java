@@ -25,11 +25,11 @@ public class PhaseShiftKeyingModulator extends SignalPlot
             {
                 if ( bit == 1 )
                 {
-                    y[j] = AMPLITUDE * Math.sin((2.0 * Math.PI * F_C * x[j]) + Math.PI);
+                    y[j] = AMPLITUDE * Math.cos((2.0 * Math.PI * F_C * x[j]) + Math.PI);
                 }
                 else
                 {
-                    y[j] = AMPLITUDE * Math.sin(2.0 * Math.PI * F_C * x[j]);
+                    y[j] = AMPLITUDE * Math.cos(2.0 * Math.PI * F_C * x[j]);
                 }
             }
         }

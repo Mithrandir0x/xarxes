@@ -26,11 +26,11 @@ public class FrequencyShiftKeyingModulator extends SignalPlot
             {
                 if ( bit == 1 )
                 {
-                    y[j] = AMPLITUDE * Math.sin(2.0 * Math.PI * F_1 * x[j]);
+                    y[j] = AMPLITUDE * Math.cos(2.0 * Math.PI * F_1 * x[j]);
                 }
                 else
                 {
-                    y[j] = AMPLITUDE * Math.sin(2.0 * Math.PI * F_0 * x[j]);
+                    y[j] = AMPLITUDE * Math.cos(2.0 * Math.PI * F_0 * x[j]);
                 }
             }
         }

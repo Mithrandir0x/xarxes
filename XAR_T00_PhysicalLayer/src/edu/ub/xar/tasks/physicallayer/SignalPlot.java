@@ -4,6 +4,10 @@ import de.erichseifert.gral.data.DataTable;
 import java.util.Arrays;
 
 /**
+ * Base class for any signal plotter.
+ * 
+ * This class holds basic functionality to transform and obtain the encoded
+ * or modulated signal from a string of bits.
  *
  * @author olopezsa13
  */
@@ -28,17 +32,51 @@ public abstract class SignalPlot
         this.bitrate = bitrate;
     }
     
+    /**
+     * Create the signal by implementing this method.
+     * 
+     * Given an array of integer values containing each bit of the stream,
+     * it is possible to modify y-axis array values when this method is
+     * executed.
+     * 
+     * @param bits 
+     */
     protected abstract void process(int bits[]);
     
+    /**
+     * Return the title of the signal to be displayed.
+     * 
+     * @return the title
+     */
     public abstract String getTitle();
+    
+    /**
+     * Return the maximum possible value that can be y-axis values.
+     * 
+     * @return the max y-axis value
+     */
     public abstract Double getAxisYMax();
+    
+    /**
+     * Return the minimum possible value that can be y-axis values.
+     * 
+     * @return the min y-axis value
+     */
     public abstract Double getAxisYMin();
     
+    /**
+     * Return a DataTable data structure to be used by a GRAL Plot object.
+     * 
+     * @return the datatable
+     * @throws Exception 
+     */
     public DataTable getDataTable() throws Exception
     {
         int l = bitString.length();
         int bits[] = new int[l];
         
+        // Initialize both arrays that will contain
+        // the voltage and the time axis.
         int ticks = DIVISIONS * l;
         x = new Double[ticks];
         y = new Double[ticks];

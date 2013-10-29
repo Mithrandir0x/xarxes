@@ -3,6 +3,7 @@ package edu.ub.xar.tasks.physicallayer.encoders;
 import edu.ub.xar.tasks.physicallayer.SignalPlot;
 
 /**
+ * Unipolar Non-Return to Zero Code.
  *
  * @author olopezsa13
  */
@@ -28,7 +29,7 @@ public class NonReturnZeroEncoder extends SignalPlot
     @Override
     public String getTitle()
     {
-        return "Nonreturn to Zero (NRZ)";
+        return "Unipolar Nonreturn to Zero (NRZ)";
     }
 
     @Override
