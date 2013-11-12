@@ -1,3 +1,7 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package edu.ub.xar.p02.sunspotdhcp;
 
 import com.sun.spot.io.j2me.radiogram.RadiogramConnection;
@@ -17,36 +21,33 @@ import javax.microedition.midlet.MIDletStateChangeException;
  * @author: Fernando Mateus
  * @author: Oriol Lopez
  */
-public class SunSpotDhcpServer extends MIDlet
+public class SunSpotDhcpClient extends MIDlet
 {
     
     private final static String SubnetGroup = "127";
     private final static String HostAddress = "10.0." + SubnetGroup + ".1";
     
-    private Map<String, Spot> connectedSpots;
+    private Map<Byte, Spot> connectedSpots;
     
     private final static Pattern ProtocolPattern = Protocol.ProtocolPattern;
-    
-    public static void main(String[] args)
-    {
-//        Matcher matcher = ProtocolPattern.matcher("10.0.127.25##10.0.127.1##000##Hello World!!!");
-//        while ( matcher.find() )
-//        {
-//            System.out.println(">> " + matcher.matches()); // yay or nay
-//            System.out.println(">> " + matcher.group()); // All data
-//            System.out.println(">> " + matcher.group(1)); // Origin Address
-//            System.out.println(">> " + matcher.group(2)); // Destination Address
-//            System.out.println(">> " + matcher.group(3)); // OpCode
-//            System.out.println(">> " + matcher.group(4)); // Data
-//        }
-//        System.out.println(">> ENDE.");
-    }
 
     @Override
     protected void startApp() throws MIDletStateChangeException
     {
         new BootloaderListenerService().getInstance().start();
-        startListenerThread();
+        startSenderThread();
+    }
+    
+    private synchronized void startSenderThread()
+    {
+        new Thread(){
+            
+            @Override
+            public void run()
+            {
+            }
+            
+        }.start();
     }
     
     private void startListenerThread()
@@ -90,14 +91,12 @@ public class SunSpotDhcpServer extends MIDlet
                                 // Valid packet format
                                 String origin = matcher.group(1);
                                 String destination = matcher.group(2);
-                                String opcode = matcher.group(3); // Comment if opcode is not valid to use
+                                String opcode = matcher.group(3);
                                 String data = matcher.group(4);
                                 
                                 if ( destination.equals(HostAddress) && opcode.equals("000") )
                                 {
                                     // New device wanting to enter the net
-                                    
-                                    dg.writeUTF(destination + "##" + origin + "##" + "001" + "##" + "Connection Stablished. Welcome to home.");
                                 }
                             }
                         }
