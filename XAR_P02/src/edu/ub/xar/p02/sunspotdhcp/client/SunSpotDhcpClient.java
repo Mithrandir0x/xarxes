@@ -1,4 +1,4 @@
-package edu.ub.xar.p02.sunspotdhcp;
+package edu.ub.xar.p02.sunspotdhcp.client;
 
 import java.io.IOException;
 
@@ -11,6 +11,8 @@ import com.sun.spot.io.j2me.radiogram.RadiogramConnection;
 import com.sun.spot.resources.Resources;
 import com.sun.spot.resources.transducers.ITriColorLEDArray;
 import com.sun.spot.resources.transducers.LEDColor;
+import edu.ub.xar.p02.sunspotdhcp.Packet;
+import edu.ub.xar.p02.sunspotdhcp.Protocol;
 
 /**
  * The DHCP client application for SunSpots.
