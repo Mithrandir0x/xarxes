@@ -1,4 +1,4 @@
-package edu.ub.xar.p02.sunspotdhcp;
+package edu.ub.xar.p02.sunspotdhcp.server;
 
 /**
  *

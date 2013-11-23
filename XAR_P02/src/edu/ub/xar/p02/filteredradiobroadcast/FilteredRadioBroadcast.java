@@ -70,14 +70,14 @@ public class FilteredRadioBroadcast extends javax.microedition.midlet.MIDlet
                         dgConnection.receive(dg);
                         tmp = dg.readUTF();
                         String foreignAddress = dg.getAddress();
-                        if ( foreignAddress != null && foreignAddress.equals("") ) // Set SunSPOT sender MAC address to filter filthy ones
+                        if ( foreignAddress != null && foreignAddress.equals("0014.4F01.0000.16A8") ) // Set SunSPOT sender MAC address to filter filthy ones
                         {
                             System.out.println("Received: [" + tmp + "] from [" + dg.getAddress() + "]");
                         }
-                        else
+                        /*else
                         {
                             System.out.println("Received: [" + tmp + "] from [UNKNOWN DEVICE].");
-                        }
+                        }*/
                     }
                     catch (IOException e)
                     {
@@ -104,7 +104,7 @@ public class FilteredRadioBroadcast extends javax.microedition.midlet.MIDlet
                 {
                     // The Connection is a broadcast so we specify it in the creation string
                     // Here we're sending datagrams to everyone, spamming them. Spaaaam lovely spaaaam, spaaam lovely spaaaaam
-                    dgConnection = (DatagramConnection) Connector.open("radiogram://broadcast:37");
+                    dgConnection = (DatagramConnection) Connector.open("radiogram://0014.4F01.0000.16A8:37");
                     // Then, we ask for a datagram with the maximum size allowed
                     dg = dgConnection.newDatagram(dgConnection.getMaximumLength());
                 }
@@ -121,7 +121,6 @@ public class FilteredRadioBroadcast extends javax.microedition.midlet.MIDlet
                     {
                         // We send the message (UTF encoded)
                         dg.reset();
-                        dg.setAddress(""); // Set SunSPOT sender MAC 
                         dg.writeUTF("This is commander Sheppard, and this is my favorite sunspot of the Citadel.");
                         dgConnection.send(dg);
                         System.out.println("Broadcast is going through");
@@ -134,11 +133,11 @@ public class FilteredRadioBroadcast extends javax.microedition.midlet.MIDlet
                     
                     // Obtain some transmission statistics
                     {
-                        propietaryRadio.resetErrorCounters();
                         System.out.println("           RX overflows: [" + propietaryRadio.getRxOverflow() + "]");
                         System.out.println("             CRC errors: [" + propietaryRadio.getCrcError() + "]");
                         System.out.println("Channel busy stopped TX: [" + propietaryRadio.getTxMissed() + "]");
                         System.out.println(" Short packets received: [" + propietaryRadio.getShortPacket() + "]");
+                        //propietaryRadio.resetErrorCounters();
                     }
                 }
             }

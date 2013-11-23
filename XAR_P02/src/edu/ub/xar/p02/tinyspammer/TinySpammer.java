@@ -7,6 +7,7 @@ import javax.microedition.io.Datagram;
 import javax.microedition.midlet.MIDletStateChangeException;
 
 import com.sun.spot.io.j2me.radiogram.RadiogramConnection;
+import javax.microedition.io.DatagramConnection;
 
 /**
  * 
@@ -38,6 +39,8 @@ public class TinySpammer extends javax.microedition.midlet.MIDlet
             {
                 String tmp = null;
                 RadiogramConnection dgConnection = null;
+                DatagramConnection dgSpamConnection = null;
+                Datagram dgSpam = null;
                 Datagram dg = null;
                 
                 try
@@ -61,10 +64,18 @@ public class TinySpammer extends javax.microedition.midlet.MIDlet
                         dgConnection.receive(dg);
                         tmp = dg.readUTF();
                         String foreignAddress = dg.getAddress();
-                        if ( foreignAddress != null && foreignAddress.equals("") ) // Set SunSPOT sender MAC address to filter filthy ones
+                        if ( foreignAddress != null ) // Set SunSPOT sender MAC address to filter filthy ones
                         {
                             System.out.println("Received: [" + tmp + "] from [" + dg.getAddress() + "]");
-                            dg.writeUTF("Heyoo! Do you want some spam? Yeah I know you want spam, you'll love to have so much spam. Spam spam spam, lovely spaaam lovely spaaaaam!!");
+                            
+                            dgSpamConnection = (DatagramConnection) Connector.open("radiogram://" + dg.getAddress() + ":37");
+                            // Then, we ask for a datagram with the maximum size allowed
+                            dgSpam = dgSpamConnection.newDatagram(dgSpamConnection.getMaximumLength());
+                            dgSpam.writeUTF("Heyoo! Do you want some spam? Yeah I know you want spam," +
+                                    "you'll love to have so much spam. Spam spam spam, lovely" +
+                                    "spaaam lovely spaaaaam!!");
+                            dgSpamConnection.send(dgSpam);
+                            dgSpamConnection.close();
                         }
                         else
                         {
