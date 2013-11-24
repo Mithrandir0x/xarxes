@@ -130,6 +130,7 @@ public class SunSpotDhcpServer
                                         }
 
                                         dgSend.writeUTF(Protocol.Serialize(r));
+                                        dgSendConnection.close();
                                     }
                                 }
                                 else if ( opcode.equals(Protocol.OPCODE_INVITE_DISCONECT) )

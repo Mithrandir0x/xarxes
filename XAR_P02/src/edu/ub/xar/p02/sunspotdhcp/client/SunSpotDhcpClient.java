@@ -107,6 +107,8 @@ public class SunSpotDhcpClient extends javax.microedition.midlet.MIDlet
                                     r.setOpcode(Protocol.OPCODE_INVITE_REQUEST);
                                     r.setData("");
                                     dgSend.writeUTF(Protocol.Serialize(r));
+                                    
+                                    dgSendConnection.close();
 
                                     state = WAITING_FOR_DHCP_RESPONSE;
                                 }
