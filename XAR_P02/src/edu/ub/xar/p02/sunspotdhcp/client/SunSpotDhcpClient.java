@@ -25,16 +25,19 @@ import edu.ub.xar.p02.sunspotdhcp.Protocol;
  * it will be displayed in the SunSpots LEDs the number of the
  * IP assigned by the server.
  * 
- * @author: David Mercier <david.mercier@sun.com>
  * @author: Fernando Mateus
  * @author: Oriol Lopez
  */
-public abstract class SunSpotDhcpClient extends javax.microedition.midlet.MIDlet
+public class SunSpotDhcpClient extends javax.microedition.midlet.MIDlet
 {
     
-    private ITriColorLEDArray leds = (ITriColorLEDArray)Resources.lookup(ITriColorLEDArray.class);
+    private ITriColorLEDArray leds = (ITriColorLEDArray) Resources.lookup(ITriColorLEDArray.class);
     
-    private int WorkingMode = 0;
+    private static final int WAITING_FOR_INVITATION = 0;
+    private static final int WAITING_FOR_DHCP_RESPONSE = 1;
+    private static final int INVITATION_SUCCESSFUL = 2;
+    
+    private int state = WAITING_FOR_INVITATION;
     private int lightId;
     
     private String HostMacAddress = null;
@@ -84,7 +87,7 @@ public abstract class SunSpotDhcpClient extends javax.microedition.midlet.MIDlet
                         
                         if ( foreignAddress != null )
                         {
-                            if ( WorkingMode == 0 )
+                            if ( state == WAITING_FOR_INVITATION )
                             {
                                 // Waiting for a valid dhcp broadcast message
                                 p = Protocol.Deserialize(tmp);
@@ -105,11 +108,10 @@ public abstract class SunSpotDhcpClient extends javax.microedition.midlet.MIDlet
                                     r.setData("");
                                     dgSend.writeUTF(Protocol.Serialize(r));
 
-                                    WorkingMode = 1;
+                                    state = WAITING_FOR_DHCP_RESPONSE;
                                 }
                             }
-
-                            if ( WorkingMode == 1 )
+                            else if ( state == WAITING_FOR_DHCP_RESPONSE )
                             {
                                 // Waiting for dhcp registration response
                                 p = Protocol.Deserialize(tmp);
@@ -121,16 +123,16 @@ public abstract class SunSpotDhcpClient extends javax.microedition.midlet.MIDlet
                                     if ( opcode.equals(Protocol.OPCODE_INVITE_ACCEPTED) )
                                     {
                                         lightId = getIp(p.getDestination());
-                                        WorkingMode = 2;
+                                        state = 2;
                                     }
                                     else if ( opcode.equals(Protocol.OPCODE_INVITE_REJECTED) )
                                     {
-                                        WorkingMode = 0;
+                                        state = WAITING_FOR_INVITATION;
                                     }
                                 }
                             }
                             
-                            if ( WorkingMode == 2 )
+                            if ( state == INVITATION_SUCCESSFUL )
                             {
                                 // 
                                 
