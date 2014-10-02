@@ -44,7 +44,7 @@ class ClientChat implements Runnable
                 }
                 else
                 {
-                    managerChat.broadcast(id, id + ": " + linia);
+                    managerChat.broadcast(id, String.format("%2d: %s", id, linia));
                 }
             }
         }
@@ -74,7 +74,7 @@ class ClientChat implements Runnable
     {
         if ( online )
         {
-            System.out.println("SENDING: [" + message + "]");
+            System.out.println(String.format("SENDING to [%2d]: [%s]", id, message));
             out.println(message);
             out.flush();
         }

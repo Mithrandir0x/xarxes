@@ -2,15 +2,21 @@ package edu.ub.xar.chat.server;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
+/**
+ * 
+ * 
+ * @author olopezsa13
+ */
 public class ConnectionManager
 {
     
-    private static List<ThreadChat> connections = Collections.synchronizedList(new ArrayList<ThreadChat>());
-    private static List<Integer> toBeDeleted = Collections.synchronizedList(new ArrayList<Integer>());
+    private static Map<Integer, ThreadChat> connections = Collections.synchronizedMap(new HashMap<Integer, ThreadChat>());
+    
     private static final Thread watchdog = new Thread("Charlie"){
         
         @Override
@@ -20,24 +26,20 @@ public class ConnectionManager
             
             while ( true )
             {
-                for ( Integer i : toBeDeleted )
-                {
-                    connections.remove(i.intValue());
-                }
-                toBeDeleted.clear();
-                
                 try
                 {
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                 }
-                catch ( InterruptedException ex )
+                catch ( Exception ex )
                 {
                 }
                 
                 // Thread timeout verification
-                for ( ThreadChat th : connections )
+                for ( Entry<Integer, ThreadChat> entrySet : connections.entrySet() )
                 {
+                    ThreadChat th = entrySet.getValue();
                     ClientChat cc = th.getClientChat();
+                    Integer key = entrySet.getKey();
                     if ( !cc.isOnline() )
                     {
                         try
@@ -45,13 +47,12 @@ public class ConnectionManager
                             System.out.println("Cleaning Client #" + cc.getId() + " thread...");
                             cc.close();
                             th.getThread().join(2000);
+                            connections.remove(key);
                         }
-                        catch (InterruptedException ex)
+                        catch ( Exception ex )
                         {
                             ex.printStackTrace();
                         }
-                        
-                        toBeDeleted.add(connections.indexOf(th));
                     }
                 }
             }
@@ -64,7 +65,7 @@ public class ConnectionManager
         watchdog.start();
     }
     
-    private static class ThreadChat
+    private class ThreadChat
     {
         
         private Thread thread;
@@ -88,12 +89,15 @@ public class ConnectionManager
         
     }
     
+    private ServerSocket server;
+    
     public ConnectionManager()
     {
         int contador = 0;
         try
         {
-            ServerSocket server = new ServerSocket(8189);
+            server = new ServerSocket(8189);
+            
             System.out.println("Server listening at " + server.getInetAddress() + ":8189");
             
             while ( true )
@@ -103,7 +107,7 @@ public class ConnectionManager
                 ClientChat r = new ClientChat(socket, this, contador);
                 Thread t = new Thread(r);
                 t.start();
-                connections.add(new ThreadChat(t, r));
+                connections.put(contador, new ThreadChat(t, r));
                 broadcast(contador, "Client #" + contador + " connected...");
                 
                 contador++;
@@ -128,10 +132,10 @@ public class ConnectionManager
     
     public void broadcast(int id, String message)
     {
-        for ( ThreadChat th : connections )
+        for ( ThreadChat th : connections.values() )
         {
             ClientChat cc = th.getClientChat();
-            if ( cc != null && cc.getId() != id )
+            if ( cc != null && cc.getId() != id && cc.isOnline() )
             {
                 cc.send(message);
             }
