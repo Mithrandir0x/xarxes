@@ -1,16 +1,21 @@
 package edu.ub.xar.chat.server;
 
+import edu.ub.xar.chat.server.commands.CommandParser;
+import edu.ub.xar.chat.server.commands.CommandRunner;
 import java.io.*;
 import java.net.*;
+import java.util.List;
 
 class ClientChat implements Runnable
 {
 
+    private CommandParser parser = null;
     private Socket socket = null;
     private ConnectionManager managerChat = null;
     private PrintWriter out;
     private BufferedReader in;
     private int id;
+    private String username = null;
     private boolean online = true;
 
     public ClientChat(Socket s, ConnectionManager mc, int c)
@@ -18,6 +23,47 @@ class ClientChat implements Runnable
         socket = s;
         id = c;
         managerChat = mc;
+        parser = new CommandParser();
+        
+        registerCommands();
+    }
+    
+    private void registerCommands()
+    {
+        parser.registerCommand(CommandParser.BYE, new CommandRunner(){
+            @Override
+            public void run() {
+                online = false;
+            }
+        });
+        
+        parser.registerCommand(CommandParser.SET_USERNAME, new CommandRunner(){
+            @Override
+            public void run() {
+                List<String> args = getArguments();
+                username = args.get(1);
+                
+                send(String.format("S'ha canviat nom d'usuari [%2d] -> [%s]", id, username));
+            }
+        });
+        
+        parser.registerCommand(CommandParser.TEXT, new CommandRunner(){
+            @Override
+            public void run() {
+                List<String> args = getArguments();
+                String linia = args.get(0);
+                
+                // More complex writing to support usernames
+                if ( username == null )
+                {
+                    managerChat.broadcast(id, String.format("[anonymous:%2d]: %s", id, linia));
+                }
+                else
+                {
+                    managerChat.broadcast(id, String.format("[%s:%2d]: %s", username, id, linia));
+                }
+            }
+        });
     }
 
     @Override
@@ -29,7 +75,7 @@ class ClientChat implements Runnable
             OutputStream salida = socket.getOutputStream();
             in = new BufferedReader(new InputStreamReader(entrada));
             out = new PrintWriter(new OutputStreamWriter(salida), true);
-            this.send("Servidor connectat. Escriu BYE per sortir");
+            send("Servidor connectat. Escriu BYE per sortir");
             while ( online )
             {
                 String linia = in.readLine();
@@ -38,14 +84,7 @@ class ClientChat implements Runnable
                 if ( linia == null )
                     throw new Exception("Broken connection peer #" + id);
                 
-                if ( linia.trim().equals("BYE") )
-                {
-                    online = false;
-                }
-                else
-                {
-                    managerChat.broadcast(id, String.format("%2d: %s", id, linia));
-                }
+                parser.parse(linia);
             }
         }
         catch ( Exception ex )

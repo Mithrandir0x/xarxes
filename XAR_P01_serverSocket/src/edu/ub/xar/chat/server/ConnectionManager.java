@@ -47,7 +47,9 @@ public class ConnectionManager
                             System.out.println("Cleaning Client #" + cc.getId() + " thread...");
                             cc.close();
                             th.getThread().join(2000);
-                            connections.remove(key);
+                            
+                            // Concurrent modification issue
+                            //connections.remove(key);
                         }
                         catch ( Exception ex )
                         {

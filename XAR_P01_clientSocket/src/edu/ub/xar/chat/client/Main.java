@@ -1,6 +1,7 @@
 package edu.ub.xar.chat.client;
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -17,12 +18,15 @@ public class Main
         final OutputStream salida;
         
         try
-        {            
+        {
             String IP_Address = args[0];
             
             int port = Integer.parseInt(args[1]);
             
-            socket = new Socket(IP_Address, port);
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(IP_Address, port), 1000);
+            //socket.setSoTimeout(1000);
+            
             entrada = socket.getInputStream();
             salida = socket.getOutputStream();
             
@@ -62,7 +66,7 @@ public class Main
                 //System.out.println("SENDING: [" + message + "]");
                 out.println(message);
                 
-                if ( message.equals("BYE") )
+                if ( message.equals("/BYE") )
                 {
                     Thread.sleep(1000);
                     break;
