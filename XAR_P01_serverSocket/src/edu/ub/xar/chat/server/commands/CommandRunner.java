@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Aquesta clase serverix per abstreure la lògica de negoci d'execució
+ * d'una comanda.
  *
  */
 public abstract class CommandRunner

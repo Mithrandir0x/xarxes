@@ -8,15 +8,22 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
+ * Gestor de connexions de l'aplicació servidor de chat.
  * 
+ * Aquesta clase s'encarrega de guardar totes les connexions dels clients que
+ * connecten al chat, i gestiona cadascun dels fils d'execució per cada usuari
+ * connectat.
  * 
- * @author olopezsa13
  */
 public class ConnectionManager
 {
     
     private static Map<Integer, ThreadChat> connections = Collections.synchronizedMap(new HashMap<Integer, ThreadChat>());
     
+    /**
+     * Fil estàtic que vigila cadascun dels fils dels usuaris del chat.
+     * 
+     */
     private static final Thread watchdog = new Thread("Charlie"){
         
         @Override
@@ -67,6 +74,10 @@ public class ConnectionManager
         watchdog.start();
     }
     
+    /**
+     * Clase interna per relacionar el thread amb la instància de chat.
+     * 
+     */
     private class ThreadChat
     {
         

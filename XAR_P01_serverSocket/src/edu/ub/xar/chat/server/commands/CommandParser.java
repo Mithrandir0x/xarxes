@@ -116,18 +116,18 @@ public class CommandParser
 
         @Override
         public boolean extract(String text, CommandRunner runner) {
-                Matcher m = pattern.matcher(text);
+            Matcher m = pattern.matcher(text);
                 
-                if ( m.find() )
-                {
-                    List<String> args = runner.getArguments();
-                    args.clear();
-                    args.add(text);
-                    
-                    return true;
-                }
-                
-                return false;
+            if ( m.find() )
+            {
+                List<String> args = runner.getArguments();
+                args.clear();
+                args.add(text);
+
+                return true;
+            }
+
+            return false;
         }
         
     }

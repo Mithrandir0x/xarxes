@@ -56,11 +56,11 @@ class ClientChat implements Runnable
                 // More complex writing to support usernames
                 if ( username == null )
                 {
-                    managerChat.broadcast(id, String.format("[anonymous:%2d]: %s", id, linia));
+                    managerChat.broadcast(id, String.format("anonymous@%2d: %s", id, linia));
                 }
                 else
                 {
-                    managerChat.broadcast(id, String.format("[%s:%2d]: %s", username, id, linia));
+                    managerChat.broadcast(id, String.format("%s@%2d: %s", username, id, linia));
                 }
             }
         });
